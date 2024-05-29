@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS Spam Classifier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        form {
+            text-align: center;
+        }
+        
+        textarea {
+            width: 80%;
+            height: 100px;
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        h2 {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        p {
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        pre {
+            margin: 0 auto;
+            width: 60%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+            overflow-x: auto;
+        }
+        
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+
+        #prediction-result {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d9534f; /* Bootstrap's red color for warnings */
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>SMS Spam Classifier</h1>
+    <form id="sms-form">
+        <textarea name="sms_text" id="sms_text" rows="4" cols="50" placeholder="Enter SMS text..."></textarea><br><br>
+        <button type="submit">Classify</button>
+    </form>
+    <br>
+    <div id="result">
+        <h2>Evaluation Metrics:</h2>
+        <p>Accuracy: {{ accuracy }}</p>
+        <p>Classification Report:</p>
+        <pre>{{ classification_report }}</pre>
+        <h2>Prediction Result:</h2>
+        <p id="prediction-result"></p>
+    </div>
+
+    <script>
+        document.getElementById('sms-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch('/classify', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                const predictionResult = document.getElementById('prediction-result');
+                predictionResult.innerText = 'Prediction: ' + data.prediction;
+                predictionResult.style.fontSize = '24px'; // Make text larger
+                predictionResult.style.fontWeight = 'bold'; // Make text bold
+                predictionResult.style.color = '#d9534f'; // Highlight text with red color
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
